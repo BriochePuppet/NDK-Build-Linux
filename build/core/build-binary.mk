@@ -128,10 +128,6 @@ $(cleantarget)::
 # list of generated object files
 LOCAL_OBJECTS :=
 
-# always define ANDROID when building binaries
-#
-LOCAL_CFLAGS := -DANDROID $(LOCAL_CFLAGS)
-
 ifeq ($(APP_SUPPORT_FLEXIBLE_PAGE_SIZES),true)
   LOCAL_CFLAGS += -D__BIONIC_NO_PAGE_SIZE_MACRO
   ifneq (,$(filter $(APP_ABI),arm64-v8a x86_64))
@@ -440,12 +436,6 @@ CLEAN_OBJS_DIRS     += $(LOCAL_OBJS_DIR)
 # the old version of LLDB in Android Studio, which doesn't understand LLD's
 # default hash ("fast").
 linker_ldflags := -Wl,--build-id=sha1
-
-ifneq (,$(call lt,$(APP_PLATFORM_LEVEL),30))
-    # https://github.com/android/ndk/issues/1196
-    # https://github.com/android/ndk/issues/1589
-    linker_ldflags += -Wl,--no-rosegment
-endif
 
 my_ldflags := $(TARGET_LDFLAGS) $(linker_ldflags) $(NDK_APP_LDFLAGS) $(LOCAL_LDFLAGS)
 

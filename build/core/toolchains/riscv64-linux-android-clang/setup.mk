@@ -25,6 +25,7 @@ TARGET_UBSAN_BASENAME := libclang_rt.ubsan_standalone-riscv64-android.so
 TARGET_CFLAGS := -fPIC
 
 TARGET_riscv64_release_CFLAGS := \
+    -D_FORTIFY_SOURCE=2 \
     -O2 \
     -DNDEBUG \
 

@@ -58,8 +58,6 @@ endef
 # this buggy behavior.
 define cmd-build-executable
 $(PRIVATE_LD_DRIVER) \
-    -Wl,-rpath-link=$(call host-path,$(PRIVATE_SYSROOT_API_LIB_DIR)) \
-    -Wl,-rpath-link=$(call host-path,$(TARGET_OUT)) \
     $(PRIVATE_LINKER_OBJECTS_AND_LIBRARIES) \
     $(GLOBAL_LDFLAGS) \
     $(PRIVATE_LDFLAGS) \
@@ -79,8 +77,8 @@ cmd-strip = $(PRIVATE_STRIP) $(PRIVATE_STRIP_MODE) $(call host-path,$1)
 # script. Hide both regardless of architecture to future-proof us in case we
 # move other architectures to a linker script (which we may want to do so we
 # automatically link libclangrt on other architectures).
-TARGET_LIBATOMIC = -latomic
-TARGET_LDLIBS := -lc -lm
+TARGET_LIBATOMIC := 
+TARGET_LDLIBS := 
 
 LLVM_TOOLCHAIN_PREFIX := $(TOOLCHAIN_ROOT)/bin/
 
@@ -89,23 +87,18 @@ LLVM_TOOLCHAIN_PREFIX := $(TOOLCHAIN_ROOT)/bin/
 # the toolchain's setup.mk script.
 TOOLCHAIN_PREFIX = $(TOOLCHAIN_ROOT)/bin/$(TOOLCHAIN_NAME)-
 
-TARGET_CC = $(LLVM_TOOLCHAIN_PREFIX)clang$(HOST_EXEEXT)
-TARGET_CXX = $(LLVM_TOOLCHAIN_PREFIX)clang++$(HOST_EXEEXT)
+TARGET_CC = clang$(HOST_EXEEXT)
+TARGET_CXX = clang++$(HOST_EXEEXT)
 
-CLANG_TIDY = $(LLVM_TOOLCHAIN_PREFIX)clang-tidy$(HOST_EXEEXT)
+CLANG_TIDY = clang-tidy$(HOST_EXEEXT)
 
 GLOBAL_CFLAGS = \
-    -target $(LLVM_TRIPLE)$(TARGET_PLATFORM_LEVEL) \
+    -pthread \
     -fdata-sections \
     -ffunction-sections \
     -fstack-protector-strong \
     -funwind-tables \
     -no-canonical-prefixes \
-
-# This is unnecessary given the new toolchain layout, but Studio will not
-# recognize this as an Android build if there is no --sysroot flag.
-# TODO: Teach Studio to recognize Android builds based on --target.
-GLOBAL_CFLAGS += --sysroot $(call host-path,$(NDK_UNIFIED_SYSROOT_PATH))
 
 # Always enable debug info. We strip binaries when needed.
 GLOBAL_CFLAGS += -g
@@ -115,8 +108,7 @@ GLOBAL_CFLAGS += \
     -Wno-invalid-command-line-argument \
     -Wno-unused-command-line-argument \
 
-GLOBAL_CFLAGS += -D_FORTIFY_SOURCE=2
-
+GLOBAL_CFLAGS += -D_GNU_SOURCE=1
 
 ifeq ($(APP_WEAK_API_DEFS), true)
   GLOBAL_CFLAGS += \
@@ -126,7 +118,7 @@ ifeq ($(APP_WEAK_API_DEFS), true)
 endif
 
 GLOBAL_LDFLAGS = \
-    -target $(LLVM_TRIPLE)$(TARGET_PLATFORM_LEVEL) \
+    -pthread \
     -no-canonical-prefixes \
 
 ifeq ($(APP_OPTIM),release)
@@ -139,16 +131,16 @@ TARGET_CFLAGS =
 TARGET_CONLYFLAGS =
 TARGET_CXXFLAGS = $(TARGET_CFLAGS)
 
-TARGET_ASM      = $(TOOLCHAIN_ROOT)/bin/yasm
+TARGET_ASM      = yasm
 TARGET_ASMFLAGS =
 
-TARGET_LD       = $(TOOLCHAIN_ROOT)/bin/ld
+TARGET_LD       = ld
 TARGET_LDFLAGS :=
 
-TARGET_AR = $(LLVM_TOOLCHAIN_PREFIX)llvm-ar$(HOST_EXEEXT)
+TARGET_AR = ar$(HOST_EXEEXT)
 TARGET_ARFLAGS := crsD
 
-TARGET_STRIP = $(LLVM_TOOLCHAIN_PREFIX)llvm-strip$(HOST_EXEEXT)
+TARGET_STRIP = strip$(HOST_EXEEXT)
 
 TARGET_OBJ_EXTENSION := .o
 TARGET_LIB_EXTENSION := .a

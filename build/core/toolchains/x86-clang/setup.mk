@@ -23,6 +23,7 @@ TARGET_UBSAN_BASENAME := libclang_rt.ubsan_standalone-i686-android.so
 TARGET_CFLAGS := -fPIC
 
 TARGET_x86_release_CFLAGS := \
+    -D_FORTIFY_SOURCE=2 \
     -O2 \
     -DNDEBUG \
 

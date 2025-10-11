@@ -24,10 +24,12 @@ TARGET_UBSAN_BASENAME := libclang_rt.ubsan_standalone-aarch64-android.so
 TARGET_CFLAGS := -fpic
 
 TARGET_arm64_release_CFLAGS := \
+    -D_FORTIFY_SOURCE=2 \
     -O2 \
     -DNDEBUG \
 
 TARGET_arm64_debug_CFLAGS := \
+    -D_FORTIFY_SOURCE=2 \
     -O0 \
     -UNDEBUG \
     -fno-limit-debug-info \
